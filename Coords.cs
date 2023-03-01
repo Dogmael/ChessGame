@@ -58,7 +58,7 @@ namespace ChessGame
 
         // Methods
 
-        static public bool TryParse(string? userInput, out Coords? result) //On autorise result à return null
+        static public bool TryParse(string? userInput, out Coords result) //On autorise result à return null
         /*
         Try parse string to Coord
         result : result of parsing (if sucess) 
@@ -67,30 +67,29 @@ namespace ChessGame
         {
             //Check if string match with a chess square
             string regex = @"([a-hA-H]{1}[1-8])";
-            
+
             if (string.IsNullOrEmpty(userInput))
             {
-                result = null;
+                result = new Coords('a', 1);
                 return false;
             }
             else
             {
-            var match = Regex.Match(userInput, regex, RegexOptions.IgnoreCase);
+                var match = Regex.Match(userInput, regex, RegexOptions.IgnoreCase);
 
-            if (userInput.Length != 2 || !match.Success)
-            {
-                result = null; //Quel choix de valeur ???
-                return false;
-            }
-            else
-            {
-                Coords result2 = new Coords(); //Pas à repréciser la type Coord car déjà dans la déclaration de variable
-                result2.Column = userInput[0];
-                int intLine = userInput[1] - '0'; // Attention unserInupt[1] renvoit un char qui doit être converti en int.
-                result2.Line = intLine;
-                result = result2;
-                return true;
-            }
+                if (userInput.Length != 2 || !match.Success)
+                {
+                    result = new Coords('a', 1); //Valeur par default qui ne signifie rien, l'équivalent du number = 0 pour int.TryParse(value, out number)
+                    return false;
+                }
+                else
+                {
+                    result = new Coords();
+                    result.Column = userInput[0];
+                    int intLine = userInput[1] - '0'; // Attention unserInupt[1] renvoit un char qui doit être converti en int.
+                    result.Line = intLine;
+                    return true;
+                }
 
             }
 
