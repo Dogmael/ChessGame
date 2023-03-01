@@ -20,7 +20,14 @@ namespace ChessGame
             Assert.True(isEqual,".PossiblesMoves() renvoit des valeurs erronées pour les arguements: ((e,3),\"black\")");
         }
 
+        // public void AskCoordsTest()
+        // {
+
+        // }
+
 
     }
+
+
 
 }

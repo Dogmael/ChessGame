@@ -7,16 +7,10 @@ namespace ChessGame;
 
 
 
-class Program : Board //Il faut hériter de board si on veut pouvoir utiliser les méthodes static qui sont dedans ! 
+class Program //Il faut hériter de board si on veut pouvoir utiliser les méthodes static qui sont dedans ! 
 {
     static void Main(string[] args)
     {
-        
-        // Board board = new Board();
-        // Object[,] boardObj = (Object[,]) board; 
-
-        // Piece piece = (Piece) board[6, 2]; // Pas d'indexeur dans les arrays ! 
-
         Console.WriteLine("Bonjour, bienvenue dans le jeu d'échec !");
         Console.OutputEncoding = Encoding.UTF8;
         Board board = new Board();
@@ -27,56 +21,39 @@ class Program : Board //Il faut hériter de board si on veut pouvoir utiliser le
         do
         {
             Console.WriteLine("Quelle pièce voulez-vous jouer ? Entrez sont emplacement actuel.");
-            Coords currentPosition = AskCoords();
+            Coords? currentPosition = AskCoords();
+            // currentPositionValidation
             Console.WriteLine("Ou voulez vous mettre cette pièce ? Entrez l'emplacement voulue.");
-            Coords newPosition = AskCoords();
+            Coords? newPosition = AskCoords();
+            // newPositionValidation
             win = board.MovePiece(currentPosition, newPosition);
             board.PrintBoard();
         } while (!win);
     }
 
 
-    public static Coords AskCoords()
+    public static Coords? AskCoords()
     {
-        while (true)
+        //On verifie que l'utilisateur entre qlq chose
+        string? stringCoords = null;
+        stringCoords = Console.ReadLine();
+        while (string.IsNullOrEmpty(stringCoords)) 
         {
-            
-            string? stringCoords = Console.ReadLine();
-            if (string.IsNullOrEmpty(stringCoords))
-            {
-                Console.WriteLine("Vous n'avez rien entré");
-            }
-            else
-            {
-                try
-                {
-                    Coords currCoords = StringToCoords(stringCoords);
-                    return currCoords;
-                }
-                catch
-                {
-                    Console.WriteLine("Enter a valid square please (e.g. A5).");
-                    continue;
-                }
-            }
-        }
-    }
-
-    public static Coords StringToCoords(string userInput)
-    {
-        //Check if string match with a chess square
-        string regex = @"([a-hA-H]{1}[1-8])";
-        var match = Regex.Match(userInput, regex, RegexOptions.IgnoreCase);
-
-        if (userInput.Length != 2 || !match.Success)
-        {
-            throw new ArgumentException("Your input is not a valid chess square");
+            Console.WriteLine("Vous n'avez rien entré. Veuillez saisir des coordonnées.");
+            stringCoords = Console.ReadLine();
         }
 
-        Coords result = new Coords();
-        result.Column = userInput[0];
-        int intLine = userInput[1] - '0'; // Attention unserInupt[1] renvoit un char qui doit être converti en int.
-        result.Line = intLine;
-        return result;
+        //On vérifie que le texte entré correponde bien à des coordonnées.
+        Coords? result; //Attention
+        if (!Coords.TryParse(stringCoords, out result)) // Attention à ne pas oublier la négation
+        {
+            Console.WriteLine("Ce que vous avez saisis ne correspond pas à des coordonnées (ex: A5).Veuillez entrer des coordonnées valides.");
+            AskCoords(); //Appel récurcif pour revérifier si la personne rentre bien quelquechose.
+            return null;
+        }
+        else
+        {
+            return result;
+        }
     }
 }

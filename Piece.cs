@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChessGame
 {
-    public class Piece
+    abstract public class Piece
     {
         // Atributs
         public (char colomun, int line) Position { get; set; }
@@ -22,8 +22,11 @@ namespace ChessGame
 
         // Methods
 
+        abstract public List<(char, int)> PossiblesMoves(); //Interessant
+
+
         public char PieceChar()
-        {    
+        {
             if (Color == "white")
             {
                 switch (PieceType)
@@ -67,8 +70,8 @@ namespace ChessGame
         }
 
         public char NewColumn(char currentColumn, int amplitude)
-        // Give letter that correspond to new columun after a mouvement of amplitude lines and from initial line currentColumn.
         {
+            // Give letter that correspond to new columun after a mouvement of amplitude lines and from initial line currentColumn.
             char newChar = (char)(((int)currentColumn) + amplitude);
             //Check if new column if out of board
             string boardColumn = "abcdefgh";
@@ -83,7 +86,8 @@ namespace ChessGame
 
         }
 
-        public int NewLine(int currentLine, int amplitude)
+        public int NewLine(int currentLine, int amplitude) 
+        //Clarifier si on travail avec les lignes de l'échéquier ou de la matrice board
         {
             int newLine = currentLine + amplitude;
             if (newLine > 0)
@@ -97,6 +101,7 @@ namespace ChessGame
         }
     }
 
+    // Inherited classes 
     public class King : Piece
     {
         //Constructor
@@ -107,30 +112,30 @@ namespace ChessGame
 
         //Methods
 
-        // public List<(char, int)> PossiblesMoves()
-        // {
-        //     List<(char, int)> possiblesMoves = new List<(char, int)>();
-        //     char column = Position.colomun;
-        //     int line = Position.line;
+        public override List<(char, int)> PossiblesMoves()
+        {
+            List<(char, int)> possiblesMoves = new List<(char, int)>();
+            char column = Position.colomun;
+            int line = Position.line;
 
-        //     int[] linesAmplitudes = { -1, 1 };
-        //     int[] columnsAmplitudes = { -1, 1 };
-        //     foreach (int amplitudeL in linesAmplitudes)
-        //     {
-        //         foreach (int amplitudeC in columnsAmplitudes)
-        //         {
-        //             try
-        //             {
-        //                 possiblesMoves.Add((NewColumn(column, amplitudeC), NewLine(line, amplitudeL)));
-        //             }
-        //             catch
-        //             { }
-        //         }
-        //     }
-        //     return possiblesMoves;
-        // }
+            int[] linesAmplitudes = { -1, 1 };
+            int[] columnsAmplitudes = { -1, 1 };
+            foreach (int amplitudeL in linesAmplitudes)
+            {
+                foreach (int amplitudeC in columnsAmplitudes)
+                {
+                    try
+                    {
+                        possiblesMoves.Add((NewColumn(column, amplitudeC), NewLine(line, amplitudeL)));
+                    }
+                    catch
+                    { }
+                }
+            }
+            return possiblesMoves;
+        }
     }
-    // Class 
+
     public class Queen : Piece
     {
         //Constructor
@@ -140,6 +145,11 @@ namespace ChessGame
         }
 
         //Methods
+        override public List<(char, int)> PossiblesMoves()
+        {
+            List<(char, int)> possiblesMoves = new List<(char, int)>();
+            return possiblesMoves;
+        }
 
 
     }
@@ -153,10 +163,13 @@ namespace ChessGame
         }
 
         //Methods
-
+        override public List<(char, int)> PossiblesMoves()
+        {
+            List<(char, int)> possiblesMoves = new List<(char, int)>();
+            return possiblesMoves;
+        }
 
     }
-
 
     public class Knight : Piece
     {
@@ -167,7 +180,7 @@ namespace ChessGame
         }
 
         //Methods
-        public List<(char, int)> PossiblesMoves()
+        override public List<(char, int)> PossiblesMoves()
         {
             List<(char, int)> possiblesMoves = new List<(char, int)>();
             char column = Position.colomun;
@@ -206,7 +219,6 @@ namespace ChessGame
         }
     }
 
-
     public class Rook : Piece
     {
         //Constructor
@@ -216,6 +228,11 @@ namespace ChessGame
         }
 
         //Methods
+        override public List<(char, int)> PossiblesMoves()
+        {
+            List<(char, int)> possiblesMoves = new List<(char, int)>();
+            return possiblesMoves;
+        }
 
 
 
@@ -231,16 +248,15 @@ namespace ChessGame
         }
 
         //Methods
-
-        public List<(char, int)> PossiblesMoves()
+        override public List<(char, int)> PossiblesMoves()
         {
             List<(char, int)> possiblesMoves = new List<(char, int)>();
             char column = Position.colomun;
-            int line = Position.line;
+            int line = Position.line; //retourne 7
 
             if (Color == "white")
             {
-                int[] amplitudes = new int[] { -1, 1 };
+                int[] amplitudes = new int[] { -1,0, 1 };
                 foreach (int moveAmplitude in amplitudes)
                     try
                     {
@@ -251,7 +267,7 @@ namespace ChessGame
             }
             else
             {
-                int[] amplitudes = new int[] { -1, 1 };
+                int[] amplitudes = new int[] { -1,0, 1 };
                 foreach (int moveAmplitude in amplitudes)
                     try
                     {
