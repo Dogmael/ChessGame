@@ -86,80 +86,82 @@ namespace ChessGame
             }
         }
 
-        public bool MovePiece(Coords currentPosition, Coords newPosition)
-        {
-            //  return true si victoire, false sinon
-            // On récupère la pièce aux coords "currentPosition"
-            Piece currentPiece;
-            bool result = false;
-            try
-            {
-                currentPiece = GetPiece(currentPosition); // {ChessGame.Pawn}
+        // public bool MovePiece(Coords currentPosition, Coords newPosition) //A réécrire après modif de la signature de GetPiece
+        // {
+        //     //  return true si victoire, false sinon
+        //     // On récupère la pièce aux coords "currentPosition"
+        //     Piece currentPiece;
+        //     bool result = false;
+        //     try
+        //     {
+        //         currentPiece = GetPiece(currentPosition); // {ChessGame.Pawn}
 
-                var possiblesPositions = currentPiece.PossiblesMoves();
+        //         var possiblesPositions = currentPiece.PossiblesMoves();
 
-                // bool authorizedMove = false;
+        //         // bool authorizedMove = false;
 
-                foreach ((char, int) positions in possiblesPositions)
-                {
-                    if (newPosition.Equals(positions))
-                    {
-                        // authorizedMove = true;
-                    }
-                }
+        //         foreach ((char, int) positions in possiblesPositions)
+        //         {
+        //             if (newPosition.Equals(positions))
+        //             {
+        //                 // authorizedMove = true;
+        //             }
+        //         }
 
 
-                // On regarde si le mouvement est autorisé
-                Console.WriteLine(currentPiece.PossiblesMoves());
-                //On regarde si il y a une pièce à "newPosition"
-                try
-                {
-                    Piece eatenPiece = GetPiece(newPosition);
-                    if (eatenPiece.PieceType == "King")
-                    {
-                        Console.WriteLine("Vous avec gagné. Félicitations. ");
-                        result = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Vous avez mangez une piece.");
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Vous n'avez mangez aucune piece.");
-                }
-                // On déplace la pièce
-                board[8 - currentPosition.Line, ColumnToInt(currentPosition.Column)] = new Object();
-                board[8 - newPosition.Line, ColumnToInt(newPosition.Column)] = currentPiece;
-            }
-            // Si la case est vide, on écris une erreur
-            catch (ArgumentException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return result;
-        }
+        //         // On regarde si le mouvement est autorisé
+        //         Console.WriteLine(currentPiece.PossiblesMoves());
+        //         //On regarde si il y a une pièce à "newPosition"
+        //         try
+        //         {
+        //             Piece eatenPiece = GetPiece(newPosition);
+        //             if (eatenPiece.PieceType == "King")
+        //             {
+        //                 Console.WriteLine("Vous avec gagné. Félicitations. ");
+        //                 result = true;
+        //             }
+        //             else
+        //             {
+        //                 Console.WriteLine("Vous avez mangez une piece.");
+        //             }
+        //         }
+        //         catch (Exception)
+        //         {
+        //             Console.WriteLine("Vous n'avez mangez aucune piece.");
+        //         }
+        //         // On déplace la pièce
+        //         board[8 - currentPosition.Line, ColumnToInt(currentPosition.Column)] = new Object();
+        //         board[8 - newPosition.Line, ColumnToInt(newPosition.Column)] = currentPiece;
+        //     }
+        //     // Si la case est vide, on écris une erreur
+        //     catch (ArgumentException e)
+        //     {
+        //         Console.WriteLine(e.Message);
+        //     }
+        //     return result;
+        // }
 
-        public Piece GetPiece(Coords position)
+        public bool GetPiece(Coords position, out Piece pieceGet)
         {
             // Return Piece at "position" location.
             // Throw an error if the case is empty.
-            int lineInt = 8 - position.Line; //On veut des indices dans board
+            int lineInt = 8 - position.Line; //On veut des indices dans board (Attention: différents Coords)
             char columChar = position.Column;
             int columInt = ColumnToInt(columChar);
+       
 
             try
             //Si la case est vide, le downcasting va renvoyer une erreur  
             {
-                Object test = board[lineInt, columInt]; // /Problème : test.Position = (98 'b', 7), on voudrait ('b',2)
-                Piece piece = (Piece)test; //Problème : piece.Position = (98 'b', 7), on voudrait ('b',2)
-                return piece;
+                Object pieceObj = board[lineInt, columInt];
+                pieceGet = (Piece)pieceObj;
+                return true;
             }
-            //Si la case est vide, on renvoie null
+            //Si la case est vide, on renvoie false et pieceGet prend une valeur sans signification
             catch (Exception)
             {
-                throw new ArgumentException("La case est vide.");
+                pieceGet = new Pawn(('z', -1), "white"); //Null equivalency
+                return false;
             }
         }
 

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 namespace ChessGame
 {
     abstract public class Piece
-    {
+    //Gérer proprement les valeurs possibles pour Position (type Coords), color (que deux possibilié) et PieceType()
+    { 
         // Atributs
         public (char colomun, int line) Position { get; set; }
         public string Color { get; set; }
@@ -229,13 +230,36 @@ namespace ChessGame
 
         //Methods
         override public List<(char, int)> PossiblesMoves()
+        //Gérer la différence de mouvements possibles entre si c'est pour manger une pièce ou non
         {
             List<(char, int)> possiblesMoves = new List<(char, int)>();
+            char column = Position.colomun;
+            int line = Position.line; //retourne 7
+
+            if (Color == "white")
+            {
+                int[] amplitudes = new int[] { -1,0, 1 };
+                foreach (int moveAmplitude in amplitudes)
+                    try
+                    {
+                        possiblesMoves.Add((NewColumn(column, moveAmplitude), NewLine(line, 1)));
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    { }
+            }
+            else
+            {
+                int[] amplitudes = new int[] { -1,0, 1 };
+                foreach (int moveAmplitude in amplitudes)
+                    try
+                    {
+                        possiblesMoves.Add((NewColumn(column, moveAmplitude), NewLine(line, -1)));
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    { }
+            }
             return possiblesMoves;
         }
-
-
-
     }
 
     public class Pawn : Piece
@@ -249,6 +273,7 @@ namespace ChessGame
 
         //Methods
         override public List<(char, int)> PossiblesMoves()
+        //Gérer la différence de mouvements possibles entre si c'est pour manger une pièce ou non
         {
             List<(char, int)> possiblesMoves = new List<(char, int)>();
             char column = Position.colomun;
