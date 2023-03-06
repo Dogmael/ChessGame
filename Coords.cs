@@ -50,6 +50,7 @@ namespace ChessGame
         }
 
         //Constructeur
+        
         public Coords(char column, int line)
         {
             this.Line = line;

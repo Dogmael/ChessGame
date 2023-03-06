@@ -7,42 +7,39 @@ namespace ChessGame
 {
     abstract public class Piece
     //Gérer proprement les valeurs possibles pour Position (type Coords), color (que deux possibilié) et PieceType()
-    { 
+    {
         // Atributs
-        public (char colomun, int line) Position { get; set; }
+        public Coords Position { get; set; }
         public string Color { get; set; }
-        public string PieceType { get; set; }
 
         // Constructor 
-        public Piece((char colomun, int line) position, string color)
+        public Piece(Coords position, string color)
         {
             Position = position;
             Color = color;
-            PieceType = "piece";
         }
 
         // Methods
 
-        abstract public List<(char, int)> PossiblesMoves(); //Interessant
-
+        abstract public List<Coords> PossiblesMoves();
 
         public char PieceChar()
         {
             if (Color == "white")
             {
-                switch (PieceType)
+                switch (this.GetType())
                 {
-                    case "King":
+                    case var value when value == typeof(King):
                         return '\u2654';
-                    case "Queen":
+                    case var value when value == typeof(Queen):
                         return '\u2655';
-                    case "Bishop":
+                    case var value when value == typeof(Bishop):
                         return '\u2657';
-                    case "Knight":
+                    case var value when value == typeof(Knight):
                         return '\u2658';
-                    case "Rook":
+                    case var value when value == typeof(Rook):
                         return '\u2656';
-                    case "Pawn":
+                    case var value when value == typeof(Pawn):
                         return '\u2659';
                     default:
                         throw new ArgumentOutOfRangeException("Your PieceType isn't recognize.");
@@ -50,19 +47,19 @@ namespace ChessGame
             }
             else
             {
-                switch (PieceType)
+                switch (this.GetType())
                 {
-                    case "King":
+                    case var value when value == typeof(King) :
                         return '\u265A';
-                    case "Queen":
+                    case var value when value == typeof(Queen):
                         return '\u265B';
-                    case "Bishop":
+                    case var value when value == typeof(Bishop):
                         return '\u265D';
-                    case "Knight":
+                    case var value when value == typeof(Knight):
                         return '\u265E';
-                    case "Rook":
+                    case var value when value == typeof(Rook):
                         return '\u265C';
-                    case "Pawn":
+                    case var value when value == typeof(Pawn):
                         return '\u265F';
                     default:
                         throw new ArgumentOutOfRangeException("Your PieceType isn't recognize.");
@@ -87,11 +84,11 @@ namespace ChessGame
 
         }
 
-        public int NewLine(int currentLine, int amplitude) 
+        public int NewLine(int currentLine, int amplitude)
         //Clarifier si on travail avec les lignes de l'échéquier ou de la matrice board
         {
             int newLine = currentLine + amplitude;
-            if (newLine > 0)
+            if (newLine > 0 && newLine < 9)
             {
                 return newLine;
             }
@@ -106,18 +103,17 @@ namespace ChessGame
     public class King : Piece
     {
         //Constructor
-        public King((char colomun, int line) position, string color) : base(position, color)
+        public King(Coords position, string color) : base(position, color)
         {
-            PieceType = "King";
         }
 
         //Methods
 
-        public override List<(char, int)> PossiblesMoves()
+        public override List<Coords> PossiblesMoves()
         {
-            List<(char, int)> possiblesMoves = new List<(char, int)>();
-            char column = Position.colomun;
-            int line = Position.line;
+            List<Coords> possiblesMoves = new List<Coords>();
+            char column = Position.Column;
+            int line = Position.Line;
 
             int[] linesAmplitudes = { -1, 1 };
             int[] columnsAmplitudes = { -1, 1 };
@@ -127,7 +123,8 @@ namespace ChessGame
                 {
                     try
                     {
-                        possiblesMoves.Add((NewColumn(column, amplitudeC), NewLine(line, amplitudeL)));
+                        Coords newCoord = new Coords(NewColumn(column, amplitudeC), NewLine(line, amplitudeL));
+                        possiblesMoves.Add(newCoord);
                     }
                     catch
                     { }
@@ -140,33 +137,107 @@ namespace ChessGame
     public class Queen : Piece
     {
         //Constructor
-        public Queen((char colomun, int line) position, string color) : base(position, color)
+        public Queen(Coords position, string color) : base(position, color)
         {
-            PieceType = "Queen";
         }
 
         //Methods
-        override public List<(char, int)> PossiblesMoves()
+        override public List<Coords> PossiblesMoves()
         {
-            List<(char, int)> possiblesMoves = new List<(char, int)>();
+            List<Coords> possiblesMoves = new List<Coords>();
+            char currentColumn = Position.Column;
+            int currentLine = Position.Line;
+
+            int[] amplitudes = new int[] { -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8 }; // On ne met pas 0 pour ne pas avoir la position initiale dans les positions possibles
+
+
+            foreach (int amplitude in amplitudes) //Gauche, droite
+            {
+                try
+                {
+                    Coords newCoord = new Coords(NewColumn(currentColumn, amplitude), currentLine);
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
+            }
+
+            foreach (int amplitude in amplitudes) // Haut/bas
+            {
+                try
+                {
+                    Coords newCoord = new Coords(currentColumn, NewLine(currentLine, amplitude));
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
+            }
+
+            foreach (int amplitude in amplitudes) // Diagonale
+            {
+                try
+                {
+                    Coords newCoord = new Coords(NewColumn(currentColumn, amplitude), NewLine(currentLine, -amplitude));
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
+            }
+
+            foreach (int amplitude in amplitudes) // Antidiagonale 
+            {
+                try
+                {
+                    Coords newCoord = new Coords(NewColumn(currentColumn, amplitude), NewLine(currentLine, amplitude));
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
+            }
+
             return possiblesMoves;
         }
-
-
     }
 
     public class Bishop : Piece
     {
         //Constructor
-        public Bishop((char colomun, int line) position, string color) : base(position, color)
+        public Bishop(Coords position, string color) : base(position, color)
         {
-            PieceType = "Bishop";
+
         }
 
         //Methods
-        override public List<(char, int)> PossiblesMoves()
+        override public List<Coords> PossiblesMoves()
         {
-            List<(char, int)> possiblesMoves = new List<(char, int)>();
+            List<Coords> possiblesMoves = new List<Coords>();
+            char currentColumn = Position.Column;
+            int currentLine = Position.Line;
+
+            int[] amplitudes = new int[] { -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8 }; // On ne met pas 0 pour ne pas avoir la position initiale dans les positions possibles
+
+            foreach (int amplitude in amplitudes) // Diagonale
+            {
+                try
+                {
+                    Coords newCoord = new Coords(NewColumn(currentColumn, amplitude), NewLine(currentLine, -amplitude));
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
+            }
+
+            foreach (int amplitude in amplitudes) // Antidiagonale 
+            {
+                try
+                {
+                    Coords newCoord = new Coords(NewColumn(currentColumn, amplitude), NewLine(currentLine, amplitude));
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
+            }
+
             return possiblesMoves;
         }
 
@@ -175,17 +246,17 @@ namespace ChessGame
     public class Knight : Piece
     {
         //Constructors
-        public Knight((char colomun, int line) position, string color) : base(position, color)
+        public Knight(Coords position, string color) : base(position, color)
         {
-            PieceType = "Knight";
+
         }
 
         //Methods
-        override public List<(char, int)> PossiblesMoves()
+        override public List<Coords> PossiblesMoves()
         {
-            List<(char, int)> possiblesMoves = new List<(char, int)>();
-            char column = Position.colomun;
-            int line = Position.line;
+            List<Coords> possiblesMoves = new List<Coords>();
+            char column = Position.Column;
+            int line = Position.Line;
 
             int[] linesAmplitudes = { -2, 2 };
             int[] columnsAmplitudes = { -1, 1 };
@@ -195,7 +266,8 @@ namespace ChessGame
                 {
                     try
                     {
-                        possiblesMoves.Add((NewColumn(column, amplitudeC), NewLine(line, amplitudeL)));
+                        Coords newCoord = new Coords(NewColumn(column, amplitudeC), NewLine(line, amplitudeL));
+                        possiblesMoves.Add(newCoord);
                     }
                     catch
                     { }
@@ -210,7 +282,8 @@ namespace ChessGame
                 {
                     try
                     {
-                        possiblesMoves.Add((NewColumn(column, amplitudeC), NewLine(line, amplitudeL)));
+                        Coords newCoord = new Coords(NewColumn(column, amplitudeC), NewLine(line, amplitudeL));
+                        possiblesMoves.Add(newCoord);
                     }
                     catch
                     { }
@@ -223,40 +296,40 @@ namespace ChessGame
     public class Rook : Piece
     {
         //Constructor
-        public Rook((char colomun, int line) position, string color) : base(position, color)
+        public Rook(Coords position, string color) : base(position, color)
         {
-            PieceType = "Rook";
         }
 
         //Methods
-        override public List<(char, int)> PossiblesMoves()
+        override public List<Coords> PossiblesMoves()
         //Gérer la différence de mouvements possibles entre si c'est pour manger une pièce ou non
         {
-            List<(char, int)> possiblesMoves = new List<(char, int)>();
-            char column = Position.colomun;
-            int line = Position.line; //retourne 7
+            List<Coords> possiblesMoves = new List<Coords>();
+            char currentColumn = Position.Column;
+            int currentLine = Position.Line;
 
-            if (Color == "white")
+            int[] amplitudes = new int[] { -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8 }; // On ne met pas 0 pour ne pas avoir la position initiale dans les positions possibles
+
+            foreach (int amplitude in amplitudes) //Gauche, droite
             {
-                int[] amplitudes = new int[] { -1,0, 1 };
-                foreach (int moveAmplitude in amplitudes)
-                    try
-                    {
-                        possiblesMoves.Add((NewColumn(column, moveAmplitude), NewLine(line, 1)));
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    { }
+                try
+                {
+                    Coords newCoord = new Coords(NewColumn(currentColumn, amplitude), currentLine);
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
             }
-            else
+
+            foreach (int amplitude in amplitudes) // Haut/bas
             {
-                int[] amplitudes = new int[] { -1,0, 1 };
-                foreach (int moveAmplitude in amplitudes)
-                    try
-                    {
-                        possiblesMoves.Add((NewColumn(column, moveAmplitude), NewLine(line, -1)));
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    { }
+                try
+                {
+                    Coords newCoord = new Coords(currentColumn, NewLine(currentLine, amplitude));
+                    possiblesMoves.Add(newCoord);
+                }
+                catch (ArgumentOutOfRangeException)
+                { }
             }
             return possiblesMoves;
         }
@@ -266,37 +339,41 @@ namespace ChessGame
     {
 
         //Constructors
-        public Pawn((char colomun, int line) position, string color) : base(position, color)
+        public Pawn(Coords position, string color) : base(position, color)
         {
-            PieceType = "Pawn";
         }
 
         //Methods
-        override public List<(char, int)> PossiblesMoves()
+        override public List<Coords> PossiblesMoves()
         //Gérer la différence de mouvements possibles entre si c'est pour manger une pièce ou non
         {
-            List<(char, int)> possiblesMoves = new List<(char, int)>();
-            char column = Position.colomun;
-            int line = Position.line; //retourne 7
+            List<Coords> possiblesMoves = new List<Coords>();
+            char column = Position.Column;
+            int line = Position.Line;
 
             if (Color == "white")
             {
-                int[] amplitudes = new int[] { -1,0, 1 };
+                int[] amplitudes = new int[] { -1, 0, 1 };
                 foreach (int moveAmplitude in amplitudes)
                     try
                     {
-                        possiblesMoves.Add((NewColumn(column, moveAmplitude), NewLine(line, 1)));
+                        char newColumn = NewColumn(column, moveAmplitude);
+                        int newLine = NewLine(line, 1);
+                        Coords newCoord = new Coords(newColumn, newLine);
+                        possiblesMoves.Add(newCoord);
                     }
                     catch (ArgumentOutOfRangeException)
                     { }
             }
             else
             {
-                int[] amplitudes = new int[] { -1,0, 1 };
+                int[] amplitudes = new int[] { -1, 0, 1 };
                 foreach (int moveAmplitude in amplitudes)
                     try
                     {
-                        possiblesMoves.Add((NewColumn(column, moveAmplitude), NewLine(line, -1)));
+                        char newColumn = NewColumn(column, moveAmplitude);
+                        int newLine = NewLine(line, -1);
+                        Coords newCoord = new Coords(newColumn, newLine);
                     }
                     catch (ArgumentOutOfRangeException)
                     { }

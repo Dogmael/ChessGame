@@ -26,40 +26,40 @@ namespace ChessGame
             // Set pieces on the board
 
             // Black pieces
-            board[0, 0] = new Rook(('a', 8), "black");
-            board[0, 1] = new Knight(('b', 8), "black");
-            board[0, 2] = new Bishop(('c', 8), "black");
-            board[0, 3] = new Queen(('d', 8), "black");
-            board[0, 4] = new King(('e', 8), "black");
-            board[0, 5] = new Bishop(('f', 8), "black");
-            board[0, 6] = new Knight(('g', 8), "black");
-            board[0, 7] = new Rook(('h', 8), "black");
-            board[1, 0] = new Pawn(('a', 7), "black");
-            board[1, 1] = new Pawn(('b', 7), "black");
-            board[1, 2] = new Pawn(('c', 7), "black");
-            board[1, 3] = new Pawn(('d', 7), "black");
-            board[1, 4] = new Pawn(('e', 7), "black");
-            board[1, 5] = new Pawn(('f', 7), "black");
-            board[1, 6] = new Pawn(('g', 7), "black");
-            board[1, 7] = new Pawn(('h', 7), "black");
+            board[0, 0] = new Rook(new Coords('a', 8), "black");
+            board[0, 1] = new Knight(new Coords('b', 8), "black");
+            board[0, 2] = new Bishop(new Coords('c', 8), "black");
+            board[0, 3] = new Queen(new Coords('d', 8), "black");
+            board[0, 4] = new King(new Coords('e', 8), "black");
+            board[0, 5] = new Bishop(new Coords('f', 8), "black");
+            board[0, 6] = new Knight(new Coords('g', 8), "black");
+            board[0, 7] = new Rook(new Coords('h', 8), "black");
+            board[1, 0] = new Pawn(new Coords('a', 7), "black");
+            board[1, 1] = new Pawn(new Coords('b', 7), "black");
+            board[1, 2] = new Pawn(new Coords('c', 7), "black");
+            board[1, 3] = new Pawn(new Coords('d', 7), "black");
+            board[1, 4] = new Pawn(new Coords('e', 7), "black");
+            board[1, 5] = new Pawn(new Coords('f', 7), "black");
+            board[1, 6] = new Pawn(new Coords('g', 7), "black");
+            board[1, 7] = new Pawn(new Coords('h', 7), "black");
 
             // White pieces
-            board[6, 0] = new Pawn(('a', 2), "white");
-            board[6, 1] = new Pawn(('b', 2), "white");
-            board[6, 2] = new Pawn(('c', 2), "white");
-            board[6, 3] = new Pawn(('d', 2), "white");
-            board[6, 4] = new Pawn(('e', 2), "white");
-            board[6, 5] = new Pawn(('f', 2), "white");
-            board[6, 6] = new Pawn(('g', 2), "white");
-            board[6, 7] = new Pawn(('h', 2), "white");
-            board[7, 0] = new Rook(('a', 1), "white");
-            board[7, 1] = new Knight(('b', 1), "white");
-            board[7, 2] = new Bishop(('c', 1), "white");
-            board[7, 3] = new Queen(('d', 1), "white");
-            board[7, 4] = new King(('e', 1), "white");
-            board[7, 5] = new Bishop(('f', 1), "white");
-            board[7, 6] = new Knight(('g', 1), "white");
-            board[7, 7] = new Rook(('h', 1), "white");
+            board[6, 0] = new Pawn(new Coords('a', 2), "white");
+            board[6, 1] = new Pawn(new Coords('b', 2), "white");
+            board[6, 2] = new Pawn(new Coords('c', 2), "white");
+            board[6, 3] = new Pawn(new Coords('d', 2), "white");
+            board[6, 4] = new Pawn(new Coords('e', 2), "white");
+            board[6, 5] = new Pawn(new Coords('f', 2), "white");
+            board[6, 6] = new Pawn(new Coords('g', 2), "white");
+            board[6, 7] = new Pawn(new Coords('h', 2), "white");
+            board[7, 0] = new Rook(new Coords('a', 1), "white");
+            board[7, 1] = new Knight(new Coords('b', 1), "white");
+            board[7, 2] = new Bishop(new Coords('c', 1), "white");
+            board[7, 3] = new Queen(new Coords('d', 1), "white");
+            board[7, 4] = new King(new Coords('e', 1), "white");
+            board[7, 5] = new Bishop(new Coords('f', 1), "white");
+            board[7, 6] = new Knight(new Coords('g', 1), "white");
+            board[7, 7] = new Rook(new Coords('h', 1), "white");
         }
 
         // Methods
@@ -86,92 +86,37 @@ namespace ChessGame
             }
         }
 
-        // public bool MovePiece(Coords currentPosition, Coords newPosition) //A réécrire après modif de la signature de GetPiece
-        // {
-        //     //  return true si victoire, false sinon
-        //     // On récupère la pièce aux coords "currentPosition"
-        //     Piece currentPiece;
-        //     bool result = false;
-        //     try
-        //     {
-        //         currentPiece = GetPiece(currentPosition); // {ChessGame.Pawn}
-
-        //         var possiblesPositions = currentPiece.PossiblesMoves();
-
-        //         // bool authorizedMove = false;
-
-        //         foreach ((char, int) positions in possiblesPositions)
-        //         {
-        //             if (newPosition.Equals(positions))
-        //             {
-        //                 // authorizedMove = true;
-        //             }
-        //         }
+public bool GetPiece(Coords position, out Piece pieceGet)
+{
+    // Return Piece at "position" location.
+    // Throw an error if the case is empty.
+    int lineInt = 8 - position.Line; //On veut des indices dans board (Attention: différents Coords)
+    char columChar = position.Column;
+    int columInt = ColumnToInt(columChar);
 
 
-        //         // On regarde si le mouvement est autorisé
-        //         Console.WriteLine(currentPiece.PossiblesMoves());
-        //         //On regarde si il y a une pièce à "newPosition"
-        //         try
-        //         {
-        //             Piece eatenPiece = GetPiece(newPosition);
-        //             if (eatenPiece.PieceType == "King")
-        //             {
-        //                 Console.WriteLine("Vous avec gagné. Félicitations. ");
-        //                 result = true;
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("Vous avez mangez une piece.");
-        //             }
-        //         }
-        //         catch (Exception)
-        //         {
-        //             Console.WriteLine("Vous n'avez mangez aucune piece.");
-        //         }
-        //         // On déplace la pièce
-        //         board[8 - currentPosition.Line, ColumnToInt(currentPosition.Column)] = new Object();
-        //         board[8 - newPosition.Line, ColumnToInt(newPosition.Column)] = currentPiece;
-        //     }
-        //     // Si la case est vide, on écris une erreur
-        //     catch (ArgumentException e)
-        //     {
-        //         Console.WriteLine(e.Message);
-        //     }
-        //     return result;
-        // }
+    try
+    //Si la case est vide, le downcasting va renvoyer une erreur  
+    {
+        Object pieceObj = board[lineInt, columInt];
+        pieceGet = (Piece)pieceObj;
+        return true;
+    }
+    //Si la case est vide, on renvoie false et pieceGet prend une valeur sans signification
+    catch (Exception)
+    {
+        pieceGet = new Pawn(new Coords('a', 1), "white");// Ca plante ici //Null equivalency
+        return false;
+    }
+}
 
-        public bool GetPiece(Coords position, out Piece pieceGet)
-        {
-            // Return Piece at "position" location.
-            // Throw an error if the case is empty.
-            int lineInt = 8 - position.Line; //On veut des indices dans board (Attention: différents Coords)
-            char columChar = position.Column;
-            int columInt = ColumnToInt(columChar);
-       
-
-            try
-            //Si la case est vide, le downcasting va renvoyer une erreur  
-            {
-                Object pieceObj = board[lineInt, columInt];
-                pieceGet = (Piece)pieceObj;
-                return true;
-            }
-            //Si la case est vide, on renvoie false et pieceGet prend une valeur sans signification
-            catch (Exception)
-            {
-                pieceGet = new Pawn(('z', -1), "white"); //Null equivalency
-                return false;
-            }
-        }
-
-        static public int ColumnToInt(char currentValue)
-        {
-            //Convert 'a' -> 0, 'b' -> 1...
-            int asciiValue = (int)currentValue;
-            int result = asciiValue - 97; //La valeur ASCII de 'a' est 97
-            return result;
-        }
+static public int ColumnToInt(char currentValue)
+{
+    //Convert 'a' -> 0, 'b' -> 1...
+    int asciiValue = (int)currentValue;
+    int result = asciiValue - 97; //La valeur ASCII de 'a' est 97
+    return result;
+}
 
     }
 }
